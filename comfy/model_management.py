@@ -877,6 +877,8 @@ def text_encoder_device():
         return get_torch_device()
     elif vram_state == VRAMState.HIGH_VRAM or vram_state == VRAMState.NORMAL_VRAM:
         if should_use_fp16(prioritize_performance=False):
+            if torch.cuda.device_count() >= 2:
+                return torch.device("cuda:1")
             return get_torch_device()
         else:
             return torch.device("cpu")
@@ -924,6 +926,8 @@ def intermediate_device():
 def vae_device():
     if args.cpu_vae:
         return torch.device("cpu")
+    if torch.cuda.device_count() >= 2:
+        return torch.device("cuda:1")
     return get_torch_device()
 
 def vae_offload_device():
